@@ -17,6 +17,8 @@ pref("app.update.url.manual", "");
 // A default value for the "More information about this update" link
 // supplied in the "An update is available" page of the update wizard.
 pref("app.update.url.details", "");
+pref("app.update.auto", false);
+pref("app.update.service.enabled", false);
 
 // The number of days a binary is permitted to be old
 // without checking for an update.  This assumes that
@@ -122,6 +124,9 @@ pref("toolkit.telemetry.enabled", false);
 pref("toolkit.telemetry.unified", false);
 pref("browser.newtabpage.activity-stream.telemetry", false);
 pref("browser.newtabpage.activity-stream.telemetry.privatePing.enabled", false);
+pref("browser.crashReports.unsubmittedCheck.enabled", false);
+pref("browser.tabs.crashReporting.sendReport", false);
+pref("breakpad.reportURL", "");
 pref("app.normandy.enabled", false);
 pref("app.shield.optoutstudies.enabled", false);
 pref("browser.discovery.enabled", false);

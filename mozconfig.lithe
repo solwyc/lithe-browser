@@ -2,5 +2,8 @@
 ac_add_options --enable-artifact-builds
 ac_add_options --with-branding=browser/branding/lithe
 ac_add_options --with-app-basename=Lithe
+ac_add_options --with-distribution-id=org.lithe.browser
+ac_add_options --disable-updater
+ac_add_options --disable-crashreporter
 
 export MOZ_APP_REMOTINGNAME=lithe
