@@ -435,7 +435,7 @@ class TestLitheYouTubeMedia(MarionetteTestCase):
         self.assertTrue(vibes["likeSelected"])
         self.assertLess(vibes["persistence"], 0)
         self.assertTrue(vibes["dedicatedTab"])
-        self.assertIn("Lithe 0.1.2 alpha", about["tagline"])
+        self.assertIn("Lithe 0.1.3 alpha", about["tagline"])
         self.assertIn("lithe-bunny.png", about["mascot"])
         self.assertEqual(about["site"], "https://st-ipod.org/lithe")
         self.assertEqual(

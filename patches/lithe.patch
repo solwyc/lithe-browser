@@ -352,7 +352,7 @@ index 0a69f98f27..25ff720e9a 100644
  
  ; [Default Preferences]
 diff --git a/browser/locales/en-US/browser/aboutDialog.ftl b/browser/locales/en-US/browser/aboutDialog.ftl
-index d0357aa57a..97b8072a40 100644
+index d0357aa57a..6605212349 100644
 --- a/browser/locales/en-US/browser/aboutDialog.ftl
 +++ b/browser/locales/en-US/browser/aboutDialog.ftl
 @@ -71,20 +71,22 @@ settings-update-internal-error = Unable to check for updates due to internal err
@@ -383,7 +383,7 @@ index d0357aa57a..97b8072a40 100644
 +bottom-links-terms = Source code
 +bottom-links-privacy = Lithe privacy
 +
-+lithe-about-tagline = Lithe 0.1.2 alpha — Fast by habit. Private by design.
++lithe-about-tagline = Lithe 0.1.3 alpha — Fast by habit. Private by design.
  
  # Example of resulting string: 66.0.1 (64-bit)
  # Variables:

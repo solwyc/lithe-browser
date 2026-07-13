@@ -24,6 +24,8 @@ gigabyte-scale Git history.
 - Pinned q8 BGE Small ONNX model with no hosted inference
 - Three-second Vibes launch animation and offline discovery fallback
 - Persistent retro-pixel Back, dislike, like, and Next controls in Vibes tabs
+- Domain-level Vibes seen history with no silent resets and a fresh exploration
+  category in every discovery query
 - A Lithe-specific About panel, release links, privacy information, and original
   bunny mascot
 
@@ -34,6 +36,8 @@ not read ordinary browsing history.
 
 See [PRIVACY.md](PRIVACY.md) for the network and local-data boundaries, and
 [BRANDING.md](BRANDING.md) for use of the Lithe name, logo, and mascot.
+The reproducible Lithe/Chrome measurements, privacy probe, resource tiers, and
+complete Vibes algorithm are documented in [BENCHMARK.md](BENCHMARK.md).
 
 ## Build on Windows
 
@@ -80,6 +84,8 @@ Windows icon after a successful artifact build:
 - `mozconfig.lithe` contains the artifact-build and Lithe-branding settings.
 - `scripts/apply-to-firefox.ps1` validates and applies the complete overlay.
 - `overlay/lithe_tools/fetch-vibes-model.ps1` downloads and verifies the model.
+- `benchmarks/browser_benchmark.py` runs the local performance and privacy
+  baseline against Lithe and Chrome.
 
 ## Licensing and trademarks
 

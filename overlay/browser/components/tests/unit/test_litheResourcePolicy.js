@@ -7,6 +7,8 @@ const { getLitheResourceTier } = ChromeUtils.importESModule(
 );
 const {
   buildVibesDiscoveryQuery,
+  chooseUnseenVibesResults,
+  hasSeenVibesCandidate,
   recordPassiveVibesInterest,
   sanitizeVibesCandidateURL,
   selectVibesCandidate,
@@ -56,6 +58,13 @@ add_task(function test_vibes_selection_and_feedback_stay_local() {
   for (const tag of first.candidate.tags) {
     Assert.equal(updated.scores[tag], 0.35);
   }
+
+  const exhausted = selectVibesCandidate(
+    VIBES_CANDIDATES,
+    { seen: VIBES_CANDIDATES.map(candidate => candidate.url) },
+    () => 0
+  );
+  Assert.equal(exhausted.candidate, null, "seen history is never silently reset");
 });
 
 add_task(function test_vibes_has_130_distinct_semantic_categories() {
@@ -80,8 +89,32 @@ add_task(function test_vibes_has_130_distinct_semantic_categories() {
 add_task(function test_vibes_query_reveals_only_generic_categories() {
   const query = buildVibesDiscoveryQuery({ scores: { space: 3 } }, () => 0);
   Assert.ok(query.includes('"Space"'));
+  Assert.ok(query.includes('"Visual art"'));
   Assert.ok(query.includes("interesting independent website"));
   Assert.ok(!query.includes("history"));
+
+  const differentExploration = buildVibesDiscoveryQuery(
+    { scores: { space: 3, astronomy: 2 } },
+    () => 0.9
+  );
+  Assert.ok(differentExploration.includes('"Space"'));
+  Assert.notEqual(differentExploration, query);
+});
+
+add_task(function test_vibes_never_reintroduces_seen_sites_when_results_are_thin() {
+  const results = [
+    { url: "https://www.example.com/new-page", title: "Same site" },
+    { url: "https://fresh.example.net/", title: "Fresh site" },
+  ];
+  const state = { seen: ["https://example.com/already-seen"] };
+  Assert.ok(hasSeenVibesCandidate(state, results[0]));
+
+  const chosen = chooseUnseenVibesResults(results, state, () => 0);
+  Assert.deepEqual(
+    chosen.map(result => result.url),
+    ["https://fresh.example.net/"],
+    "fewer than three fresh results must not reopen seen domains"
+  );
 });
 
 add_task(function test_vibes_candidate_urls_cannot_target_local_services() {
