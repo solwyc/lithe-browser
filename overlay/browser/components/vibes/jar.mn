@@ -1,0 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+browser.jar:
+  content/browser/lithe-vibes/vibes.html (content/vibes.html)
+  content/browser/lithe-vibes/vibes.css (content/vibes.css)
+  content/browser/lithe-vibes/vibes.mjs (content/vibes.mjs)
+  content/browser/lithe-vibes/third-party/BAAI-BGE-MIT-LICENSE.txt (BAAI-BGE-MIT-LICENSE.txt)
+  content/browser/lithe-vibes/third-party/model-manifest.json (model-manifest.json)
+  content/browser/lithe-vibes-models/Xenova/bge-small-en-v1.5/1.5.0/config.json (models/Xenova/bge-small-en-v1.5/1.5.0/config.json)
+  content/browser/lithe-vibes-models/Xenova/bge-small-en-v1.5/1.5.0/special_tokens_map.json (models/Xenova/bge-small-en-v1.5/1.5.0/special_tokens_map.json)
+  content/browser/lithe-vibes-models/Xenova/bge-small-en-v1.5/1.5.0/tokenizer.json (models/Xenova/bge-small-en-v1.5/1.5.0/tokenizer.json)
+  content/browser/lithe-vibes-models/Xenova/bge-small-en-v1.5/1.5.0/tokenizer_config.json (models/Xenova/bge-small-en-v1.5/1.5.0/tokenizer_config.json)
+  content/browser/lithe-vibes-models/Xenova/bge-small-en-v1.5/1.5.0/vocab.txt (models/Xenova/bge-small-en-v1.5/1.5.0/vocab.txt)
+  content/browser/lithe-vibes-models/Xenova/bge-small-en-v1.5/1.5.0/onnx/model_quantized.onnx (models/Xenova/bge-small-en-v1.5/1.5.0/onnx/model_quantized.onnx)
