@@ -59,12 +59,14 @@ pref("browser.search.suggest.enabled", false);
 // Lithe privacy and local discovery controls.
 pref("lithe.privacy.aiProtection.enabled", true);
 pref("lithe.search.defaultInitialized", false);
+pref("lithe.search.defaultMigrationVersion", 0);
 pref("lithe.vibes.available", true);
 pref("lithe.vibes.enabled", false);
 pref("lithe.vibes.discovery.enabled", true);
 pref("lithe.vibes.animation.minimumMS", 3000);
 pref("lithe.vibes.classifier", "bge-small-en-v1.5-q8");
 pref("lithe.vibes.runtimeMigrationVersion", 0);
+pref("lithe.vibes.toolbarMigrationVersion", 0);
 
 // Avoid speculative/background work that trades memory, network activity, and
 // privacy for small anticipatory speed gains. Foreground loading is unchanged.
