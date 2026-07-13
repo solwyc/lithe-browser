@@ -466,6 +466,7 @@ function minimumDelay(milliseconds) {
 export const LitheVibes = {
   _tabs: new WeakMap(),
   _pending: new WeakMap(),
+  _sessions: new WeakMap(),
 
   init() {
     if (!Services.prefs.getBoolPref("lithe.vibes.available", true)) {
@@ -553,6 +554,63 @@ export const LitheVibes = {
     return tab;
   },
 
+  _sessionFor(win) {
+    let session = this._sessions.get(win);
+    if (!session) {
+      session = { items: [], index: -1 };
+      this._sessions.set(win, session);
+    }
+    return session;
+  },
+
+  _recordCandidate(win, candidate) {
+    const session = this._sessionFor(win);
+    if (session.index < session.items.length - 1) {
+      session.items.splice(session.index + 1);
+    }
+    session.items.push(candidate);
+    session.items = session.items.slice(-50);
+    session.index = session.items.length - 1;
+  },
+
+  _setLastCandidate(state, candidate) {
+    state.last = {
+      url: candidate.url,
+      title: candidate.title,
+      tags: candidate.tags,
+      tagScores: candidate.tagScores || {},
+      classifier: candidate.classifier || "offline-catalog",
+      discovery: candidate.classifier ? "duckduckgo" : "offline-catalog",
+      startedAt: Date.now(),
+      feedbackGiven: Boolean(candidate.feedbackGiven),
+      learnedAt: 0,
+    };
+    return state;
+  },
+
+  async previous(win) {
+    const session = this._sessionFor(win);
+    if (session.index <= 0) {
+      return;
+    }
+
+    let state = recordPassiveVibesInterest(this._loadState());
+    session.index--;
+    const candidate = session.items[session.index];
+    state = this._setLastCandidate(state, candidate);
+    this._saveState(state);
+
+    const tab = this._findTab(win);
+    if (!tab?.parentNode) {
+      return;
+    }
+    win.gBrowser.selectedTab = tab;
+    await this._showControls(win, tab, candidate);
+    tab.linkedBrowser.loadURI(Services.io.newURI(candidate.url), {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+    });
+  },
+
   _showLaunchPage(win) {
     const url = `${LAUNCH_PAGE}?round=${Date.now()}`;
     let tab = this._findTab(win);
@@ -638,50 +696,85 @@ export const LitheVibes = {
     state = selection.state;
     state.seen.push(candidate.url);
     state.seen = state.seen.slice(-MAX_SEEN);
-    state.last = {
-      url: candidate.url,
-      title: candidate.title,
-      tags: candidate.tags,
-      tagScores: candidate.tagScores || {},
-      classifier: candidate.classifier || "offline-catalog",
-      discovery: candidate.classifier ? "duckduckgo" : "offline-catalog",
-      startedAt: Date.now(),
-      feedbackGiven: false,
-      learnedAt: 0,
-    };
+    state = this._setLastCandidate(state, candidate);
     this._saveState(state);
+    this._recordCandidate(win, candidate);
 
     win.gBrowser.selectedTab = tab;
+    await this._showControls(win, tab, candidate);
     tab.linkedBrowser.loadURI(Services.io.newURI(candidate.url), {
       triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
     });
+  },
 
+  async _showControls(win, tab, candidate) {
     const notificationBox = win.gBrowser.getNotificationBox(tab.linkedBrowser);
     notificationBox.getNotificationWithValue("lithe-vibes-feedback")?.close();
-    await notificationBox.appendNotification(
+    const notification = await notificationBox.appendNotification(
       "lithe-vibes-feedback",
       {
-        label: `Vibes · ${candidate.title}`,
+        label: `VIBES // ${candidate.title}`,
         priority: notificationBox.PRIORITY_INFO_MEDIUM,
+        style: {
+          "background-color": "#181c23",
+          "font-size": "0.9rem",
+        },
       },
       [
         {
-          label: "More like this",
-          callback: () => this.feedback(candidate, 1),
-        },
-        {
-          label: "Less like this",
+          label: "BACK",
           callback: () => {
-            this.feedback(candidate, -1);
-            this.next(win);
+            this.previous(win);
+            return true;
           },
         },
-        { label: "Next", callback: () => this.next(win) },
-      ]
+        {
+          label: "NOPE",
+          callback: (message, buttonInfo, button) => {
+            if (this.feedback(candidate, -1)) {
+              button.setAttribute("data-selected", "true");
+            }
+            return true;
+          },
+        },
+        {
+          label: "LIKE",
+          callback: (message, buttonInfo, button) => {
+            if (this.feedback(candidate, 1)) {
+              button.setAttribute("data-selected", "true");
+            }
+            return true;
+          },
+        },
+        {
+          label: "NEXT",
+          callback: () => {
+            this.next(win);
+            return true;
+          },
+        },
+      ],
+      true,
+      false
     );
+
+    notification.classList.add("lithe-vibes-controls");
+    // Vibes controls belong to the dedicated tab, not to one document load.
+    // A negative persistence value survives every location-change cleanup.
+    notification.persistence = -1;
+    const actions = ["back", "dislike", "like", "next"];
+    notification._buttons.forEach((button, index) => {
+      button.setAttribute("data-lithe-vibes-action", actions[index]);
+    });
+    notification._buttons[0].disabled = this._sessionFor(win).index <= 0;
   },
 
   feedback(candidate, delta) {
+    if (candidate.feedbackGiven) {
+      return false;
+    }
+    candidate.feedbackGiven = true;
     this._saveState(updateVibesState(this._loadState(), candidate, delta));
+    return true;
   },
 };

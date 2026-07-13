@@ -1,3 +1,78 @@
+diff --git a/browser/base/content/aboutDialog.js b/browser/base/content/aboutDialog.js
+index f6e1391baf..8406b032bb 100644
+--- a/browser/base/content/aboutDialog.js
++++ b/browser/base/content/aboutDialog.js
+@@ -125,14 +125,6 @@ function init() {
+       window.close();
+     });
+   if (AppConstants.MOZ_UPDATER) {
+-    document
+-      .getElementById("aboutDialogHelpLink")
+-      .addEventListener("click", () => {
+-        openHelpLink("firefox-help");
+-      });
+-    document
+-      .getElementById("submit-feedback")
+-      .addEventListener("click", openFeedbackPage);
+     document
+       .getElementById("checkForUpdatesButton")
+       .addEventListener("command", () => {
+diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
+index 3ffd464b96..69358238b0 100644
+--- a/browser/base/content/aboutDialog.xhtml
++++ b/browser/base/content/aboutDialog.xhtml
+@@ -57,6 +57,7 @@
+         <label id="distributionId" class="text-blurb"/>
+ 
+         <vbox id="detailsBox">
++          <description id="litheTagline" class="text-blurb" data-l10n-id="lithe-about-tagline"/>
+           <hbox id="updateBox">
+ #ifdef MOZ_UPDATER
+             <html:img id="updateIcon" role="presentation"/>
+@@ -103,8 +104,8 @@
+                 <label id="releasenotes" is="text-link" hidden="true" data-l10n-id="releaseNotes-link"/>
+               </hbox>
+               <description class="text-blurb">
+-                <label id="aboutDialogHelpLink" is="text-link" data-l10n-id="aboutdialog-help-user"/>
+-                <label id="submit-feedback" is="text-link" data-l10n-id="aboutdialog-submit-feedback"/>
++                <label id="aboutDialogHelpLink" is="text-link" href="https://st-ipod.org/lithe" data-l10n-id="aboutdialog-help-user"/>
++                <label id="submit-feedback" is="text-link" href="https://github.com/solwyc/lithe-browser/issues" data-l10n-id="aboutdialog-submit-feedback"/>
+               </description>
+             </vbox>
+ #endif
+@@ -120,17 +121,17 @@
+           <vbox id="experimental" hidden="true">
+             <description class="text-blurb" id="warningDesc" data-l10n-id="warningDesc-version"></description>
+             <description class="text-blurb" id="communityExperimentalDesc" data-l10n-id="community-exp">
+-              <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-exp-mozillaLink"/>
++              <label is="text-link" href="https://st-ipod.org/lithe" data-l10n-name="community-exp-mozillaLink"/>
+               <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-exp-creditsLink"/>
+             </description>
+           </vbox>
+           <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">
+-            <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-mozillaLink"/>
++            <label is="text-link" href="https://st-ipod.org/lithe" data-l10n-name="community-mozillaLink"/>
+             <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-creditsLink"/>
+           </description>
+           <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">
+-            <label is="text-link" href="https://foundation.mozilla.org/?form=firefox-about" data-l10n-name="helpus-donateLink"/>
+-            <label is="text-link" href="https://www.mozilla.org/contribute/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="helpus-getInvolvedLink"/>
++            <label is="text-link" href="https://github.com/solwyc/lithe-browser" data-l10n-name="helpus-donateLink"/>
++            <label is="text-link" href="https://github.com/solwyc/lithe-browser/issues" data-l10n-name="helpus-getInvolvedLink"/>
+           </description>
+         </vbox>
+       </vbox>
+@@ -138,8 +139,8 @@
+     <vbox id="bottomBox">
+       <hbox pack="center">
+         <label is="text-link" class="bottom-link" useoriginprincipal="true" href="about:license" data-l10n-id="bottomLinks-license"/>
+-        <label is="text-link" class="bottom-link" href="https://www.mozilla.org/about/legal/terms/firefox/" data-l10n-id="bottom-links-terms"/>
+-        <label is="text-link" class="bottom-link" href="https://www.mozilla.org/privacy/firefox/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-id="bottom-links-privacy"/>
++        <label is="text-link" class="bottom-link" href="https://github.com/solwyc/lithe-browser" data-l10n-id="bottom-links-terms"/>
++        <label is="text-link" class="bottom-link" href="https://github.com/solwyc/lithe-browser/blob/main/PRIVACY.md" data-l10n-id="bottom-links-privacy"/>
+       </hbox>
+       <description id="trademark" data-l10n-id="trademarkInfo"></description>
+     </vbox>
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
 index a0a469d01d..e8709be734 100644
 --- a/browser/components/BrowserGlue.sys.mjs
@@ -21,17 +96,133 @@ index a0a469d01d..e8709be734 100644
 +    lazy.LithePrivacyPolicy.init();
 +    lazy.LitheResourcePolicy.init();
      lazy.SessionStartup.init();
-
+ 
      // check if we're in safe mode
 @@ -926,6 +933,8 @@ BrowserGlue.prototype = {
      }
      this._windowsWereRestored = true;
-
+ 
 +    lazy.LitheVibes.init();
 +
      lazy.BrowserUsageTelemetry.init();
      lazy.SearchSERPTelemetry.init();
-
+ 
+diff --git a/browser/components/aboutwelcome/modules/AboutWelcomeDefaults.sys.mjs b/browser/components/aboutwelcome/modules/AboutWelcomeDefaults.sys.mjs
+index 097726c421..9036110123 100644
+--- a/browser/components/aboutwelcome/modules/AboutWelcomeDefaults.sys.mjs
++++ b/browser/components/aboutwelcome/modules/AboutWelcomeDefaults.sys.mjs
+@@ -59,7 +59,7 @@ const MR_ABOUT_WELCOME_DEFAULT = {
+         position: "split",
+         split_narrow_bkg_position: "-42px",
+         background:
+-          "url('chrome://activity-stream/content/data/content/assets/br-backup-fox-in-box.svg') var(--mr-secondary-position) no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
++          "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
+         progress_bar: true,
+         hide_secondary_section: "responsive",
+         backup_show_filepicker: {
+@@ -118,7 +118,7 @@ const MR_ABOUT_WELCOME_DEFAULT = {
+         position: "split",
+         split_narrow_bkg_position: "-42px",
+         background:
+-          "url('chrome://activity-stream/content/data/content/assets/br-backup-fox-in-box.svg') var(--mr-secondary-position) no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
++          "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
+         progress_bar: true,
+         hide_secondary_section: "responsive",
+         backup_show_filepicker: {
+@@ -372,7 +372,7 @@ const MR_ABOUT_WELCOME_DEFAULT = {
+           string_id: "mr2022-onboarding-default-image-alt",
+         },
+         background:
+-          "url('chrome://activity-stream/content/data/content/assets/br-set-default-fox-heart.svg') var(--mr-secondary-position) no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
++          "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
+         progress_bar: true,
+         hide_secondary_section: "responsive",
+         logo: {},
+@@ -489,7 +489,7 @@ const MR_ABOUT_WELCOME_DEFAULT = {
+         position: "split",
+         split_narrow_bkg_position: "-42px",
+         background:
+-          "url('chrome://activity-stream/content/data/content/assets/br-backup-fox-in-box.svg') var(--mr-secondary-position) no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
++          "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
+         progress_bar: true,
+         hide_secondary_section: "responsive",
+         backup_show_filepicker: {
+@@ -569,7 +569,7 @@ const MR_ABOUT_WELCOME_DEFAULT = {
+           string_id: "onboarding-refresh-import-subtitle",
+         },
+         background:
+-          "url('chrome://activity-stream/content/data/content/assets/br-import-fox-house.svg') var(--mr-secondary-position) no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
++          "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
+         progress_bar: true,
+         hide_secondary_section: "responsive",
+         migrate_start: {
+@@ -627,7 +627,7 @@ const MR_ABOUT_WELCOME_DEFAULT = {
+         fullscreen: true,
+         split_narrow_bkg_position: "-58px",
+         background:
+-          "url('chrome://activity-stream/content/data/content/assets/br-amo-fox-paint.svg') var(--mr-secondary-position) no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
++          "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
+         progress_bar: true,
+         logo: {},
+         title: {
+@@ -684,7 +684,7 @@ const MR_ABOUT_WELCOME_DEFAULT = {
+           string_id: "mr2022-onboarding-gratitude-image-alt",
+         },
+         background:
+-          "url('chrome://activity-stream/content/data/content/assets/br-gratitude-fox-rock.svg') var(--mr-secondary-position) no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
++          "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
+         progress_bar: true,
+         logo: {},
+         title: {
+@@ -714,7 +714,7 @@ const MR_ABOUT_WELCOME_DEFAULT = {
+           string_id: "mr2022-onboarding-gratitude-image-alt",
+         },
+         background:
+-          "url('chrome://activity-stream/content/data/content/assets/br-fxa-fox-mirror.svg') var(--mr-secondary-position) no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
++          "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat light-dark(rgba(252, 245, 240, 1), rgba(33, 3, 64, 1))",
+         progress_bar: true,
+         logo: {},
+         title: {
+diff --git a/browser/components/asrouter/modules/OnboardingMessageProvider.sys.mjs b/browser/components/asrouter/modules/OnboardingMessageProvider.sys.mjs
+index 64e2b55adb..5bc8331e8a 100644
+--- a/browser/components/asrouter/modules/OnboardingMessageProvider.sys.mjs
++++ b/browser/components/asrouter/modules/OnboardingMessageProvider.sys.mjs
+@@ -2208,7 +2208,7 @@ const BASE_MESSAGES = () => [
+             position: "split",
+             split_content_padding_block: "166px",
+             background:
+-              "url('chrome://activity-stream/content/data/content/assets/br-backup-fox-outside-box.svg') var(--mr-secondary-position) no-repeat var(--mr-screen-background-color)",
++              "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat var(--mr-screen-background-color)",
+             logo: {},
+             title: {
+               string_id: "restored-from-backup-success-title",
+@@ -2253,7 +2253,7 @@ const BASE_MESSAGES = () => [
+           content: {
+             position: "split",
+             background:
+-              "url('chrome://activity-stream/content/data/content/assets/br-backup-fox-outside-box.svg') var(--mr-secondary-position) no-repeat var(--mr-screen-background-color)",
++              "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat var(--mr-screen-background-color)",
+             logo: {},
+             title: {
+               string_id: "restored-from-backup-success-title",
+@@ -2358,7 +2358,7 @@ const BASE_MESSAGES = () => [
+           content: {
+             position: "split",
+             background:
+-              "url('chrome://activity-stream/content/data/content/assets/br-backup-fox-outside-box.svg') var(--mr-secondary-position) no-repeat var(--mr-screen-background-color)",
++              "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat var(--mr-screen-background-color)",
+             logo: {},
+             title: {
+               string_id: "restored-from-backup-success-title",
+@@ -2441,7 +2441,7 @@ const BASE_MESSAGES = () => [
+           content: {
+             position: "split",
+             background:
+-              "url('chrome://activity-stream/content/data/content/assets/br-backup-fox-outside-box.svg') var(--mr-secondary-position) no-repeat var(--mr-screen-background-color)",
++              "url('chrome://branding/content/lithe-bunny.png') var(--mr-secondary-position) / min(38vw, 360px) auto no-repeat var(--mr-screen-background-color)",
+             logo: {},
+             title: {
+               string_id: "restored-from-backup-success-title",
 diff --git a/browser/components/moz.build b/browser/components/moz.build
 index d1d769ab09..51c831377d 100644
 --- a/browser/components/moz.build
@@ -43,7 +234,7 @@ index d1d769ab09..51c831377d 100644
 +    "vibes",
      "webrtc",
  ]
-
+ 
 @@ -118,6 +119,10 @@ EXTRA_JS_MODULES += [
  MOZ_SRC_FILES += [
      "DefaultBrowserCheck.sys.mjs",
@@ -61,7 +252,7 @@ index 57bf119a2c..ef9f985d06 100644
 +++ b/browser/components/preferences/config/privacy.mjs
 @@ -311,6 +311,10 @@ const SECURITY_PRIVACY_STATUS_CARD_ENABLED =
    );
-
+ 
  Preferences.addAll([
 +  // Lithe local privacy controls
 +  { id: "lithe.privacy.aiProtection.enabled", type: "bool" },
@@ -77,7 +268,7 @@ index 78e2e934cf..33a7197658 100644
 @@ -550,6 +550,20 @@
    class="subcategory" data-srd-migrated=""></html:setting-group>
  <html:setting-group groupid="privacyPanel" id="privacyPanelGroup" data-category="panePrivacy" hidden="true" data-srd-migrated=""></html:setting-group>
-
+ 
 +<groupbox id="lithePrivacyGroup" data-category="panePrivacy" hidden="true">
 +  <label><html:h2 data-l10n-id="lithe-privacy-header"/></label>
 +  <checkbox id="litheAiProtection"
@@ -95,32 +286,107 @@ index 78e2e934cf..33a7197658 100644
  <groupbox data-category="panePrivacy" hidden="true" data-srd-groupid="dataCollection">
    <vbox id="privacySegmentationSection" data-subcategory="privacy-segmentation" hidden="true">
      <label>
+diff --git a/browser/components/shell/WindowsUIOverlayImage.cpp b/browser/components/shell/WindowsUIOverlayImage.cpp
+index b73e8a9363..5e5ab7f16f 100644
+--- a/browser/components/shell/WindowsUIOverlayImage.cpp
++++ b/browser/components/shell/WindowsUIOverlayImage.cpp
+@@ -204,7 +204,7 @@ static already_AddRefed<nsIFile> GetImageFile() {
+   }
+ 
+   constexpr auto kImageRelativePath{
+-      R"(browser\components\shell\assets\kit.gif)"_ns};
++      R"(browser\components\shell\assets\lithe-bunny.png)"_ns};
+   rv = file->AppendRelativeNativePath(kImageRelativePath);
+   if (NS_FAILED(rv)) {
+     return nullptr;
+diff --git a/browser/components/shell/moz.build b/browser/components/shell/moz.build
+index 119f0843ad..11664cb8f6 100644
+--- a/browser/components/shell/moz.build
++++ b/browser/components/shell/moz.build
+@@ -88,7 +88,7 @@ elif CONFIG["OS_ARCH"] == "WINNT":
+     ]
+ 
+     FINAL_TARGET_FILES.components.shell.assets += [
+-        "assets/kit.gif",
++        "assets/lithe-bunny.png",
+     ]
+ 
+     FINAL_TARGET_FILES += ["content/blank.pdf", "content/confused_fox.pdf"]
 diff --git a/browser/components/tests/unit/xpcshell.toml b/browser/components/tests/unit/xpcshell.toml
 index c85baeaceb..fdc06b8d4c 100644
 --- a/browser/components/tests/unit/xpcshell.toml
 +++ b/browser/components/tests/unit/xpcshell.toml
 @@ -35,6 +35,8 @@ skip-if = [
-
+ 
  ["test_distribution_mozillaonline.js"]
-
+ 
 +["test_litheResourcePolicy.js"]
 +
  ["test_distribution_observer.js"]
-
+ 
  ["test_profileDataUpgrade_duplicateCookiePerms.js"]
 diff --git a/browser/extensions/newtab/content-src/components/Logo/_Logo.scss b/browser/extensions/newtab/content-src/components/Logo/_Logo.scss
 index 9903881718..57961bc3a1 100644
 --- a/browser/extensions/newtab/content-src/components/Logo/_Logo.scss
 +++ b/browser/extensions/newtab/content-src/components/Logo/_Logo.scss
 @@ -3,7 +3,7 @@
-
+ 
  .logo-and-wordmark-wrapper {
    // Override default h1 margins
 -  margin-block: 0;
 +  margin-block: var(--space-medium) 0;
-
+ 
    .nova-enabled .content & {
      grid-column: 1 / -1;
+diff --git a/browser/installer/package-manifest.in b/browser/installer/package-manifest.in
+index 0a69f98f27..25ff720e9a 100644
+--- a/browser/installer/package-manifest.in
++++ b/browser/installer/package-manifest.in
+@@ -268,7 +268,7 @@
+ 
+ ; shell assets
+ #ifdef XP_WIN
+-@RESPATH@/browser/components/shell/assets/kit.gif
++@RESPATH@/browser/components/shell/assets/lithe-bunny.png
+ #endif
+ 
+ ; [Default Preferences]
+diff --git a/browser/locales/en-US/browser/aboutDialog.ftl b/browser/locales/en-US/browser/aboutDialog.ftl
+index d0357aa57a..97b8072a40 100644
+--- a/browser/locales/en-US/browser/aboutDialog.ftl
++++ b/browser/locales/en-US/browser/aboutDialog.ftl
+@@ -71,20 +71,22 @@ settings-update-internal-error = Unable to check for updates due to internal err
+ #   $channel (String): description of the update channel (e.g. "release", "beta", "nightly" etc.)
+ aboutdialog-channel-description = You are currently on the <label data-l10n-name="current-channel">{ $channel }</label> update channel.
+ 
+-warningDesc-version = { -brand-short-name } is experimental and may be unstable.
++warningDesc-version = This is an alpha build. Some rough edges are expected while Lithe gets lighter and sharper.
+ 
+-aboutdialog-help-user = { -brand-product-name } Help
+-aboutdialog-submit-feedback = Submit Feedback
++aboutdialog-help-user = Lithe website
++aboutdialog-submit-feedback = Report an issue
+ 
+-community-exp = <label data-l10n-name="community-exp-mozillaLink">{ -vendor-short-name }</label> is a <label data-l10n-name="community-exp-creditsLink">global community</label> working together to keep the Web open, public and accessible to all.
++community-exp = <label data-l10n-name="community-exp-mozillaLink">Lithe</label> is an independent, lightweight Gecko browser. Privacy protections are on by default, and Vibes classification and its taste profile stay local. Built with work from <label data-l10n-name="community-exp-creditsLink">open-source contributors</label>.
+ 
+-community-2 = { -brand-short-name } is designed by <label data-l10n-name="community-mozillaLink">{ -vendor-short-name }</label>, a <label data-l10n-name="community-creditsLink">global community</label> working together to keep the Web open, public and accessible to all.
++community-2 = <label data-l10n-name="community-mozillaLink">Lithe</label> is an independent, lightweight Gecko browser. Privacy protections are on by default, and Vibes classification and its taste profile stay local. Built with work from <label data-l10n-name="community-creditsLink">open-source contributors</label>.
+ 
+-helpus = Want to help? <label data-l10n-name="helpus-donateLink">Make a donation</label> or <label data-l10n-name="helpus-getInvolvedLink">get involved!</label>
++helpus = Follow the <label data-l10n-name="helpus-donateLink">public source</label> or <label data-l10n-name="helpus-getInvolvedLink">report an issue</label>.
+ 
+-bottomLinks-license = Licensing Information
+-bottom-links-terms = Terms of Use
+-bottom-links-privacy = Privacy Notice
++bottomLinks-license = Open-source licenses
++bottom-links-terms = Source code
++bottom-links-privacy = Lithe privacy
++
++lithe-about-tagline = Lithe 0.1.2 alpha — Fast by habit. Private by design.
+ 
+ # Example of resulting string: 66.0.1 (64-bit)
+ # Variables:
 diff --git a/browser/locales/en-US/browser/preferences/preferences.ftl b/browser/locales/en-US/browser/preferences/preferences.ftl
 index ea56406bcc..46ce55d3de 100644
 --- a/browser/locales/en-US/browser/preferences/preferences.ftl
@@ -151,8 +417,8 @@ index 3ea3d88b93..2b65485148 100644
 +++ b/browser/moz.configure
 @@ -11,8 +11,8 @@ imply_option("MOZ_NORMANDY", True)
  imply_option("MOZ_PROFILE_MIGRATOR", True)
-
-
+ 
+ 
 -imply_option("MOZ_APP_VENDOR", "Mozilla")
 -imply_option("MOZ_APP_ID", "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}")
 +imply_option("MOZ_APP_VENDOR", "Lithe Project")
@@ -161,20 +427,20 @@ index 3ea3d88b93..2b65485148 100644
  imply_option("MOZ_DEVTOOLS", "all")
  imply_option("BROWSER_CHROME_URL", "chrome://browser/content/browser.xhtml")
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 3c925f4d28..dd8c3e31e5 100644
+index 3c925f4d28..7bf3fdd0a6 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -281,6 +281,7 @@ tab-split-view-wrapper[dragtarget] {
  }
-
+ 
  .tab-content {
 +  color: #20252c;
    position: relative;
    padding: 0 var(--tab-inline-padding);
-
+ 
 @@ -293,7 +294,7 @@ tab-split-view-wrapper[dragtarget] {
    }
-
+ 
    &:is([selected], [multiselected]) {
 -    color: var(--tab-selected-textcolor);
 +    color: #181c23;
@@ -183,7 +449,7 @@ index 3c925f4d28..dd8c3e31e5 100644
  }
 @@ -904,7 +905,8 @@ tab-split-view-wrapper[dragtarget] {
  }
-
+ 
  .tab-background {
 -  border-radius: var(--tab-border-radius);
 +  background-color: #e8ddc2;
@@ -193,16 +459,85 @@ index 3c925f4d28..dd8c3e31e5 100644
    outline: var(--tab-outline);
 @@ -915,12 +917,12 @@ tab-split-view-wrapper[dragtarget] {
    }
-
+ 
    .tabbrowser-tab:hover > .tab-stack > &:not([selected], [multiselected]) {
 -    background-color: var(--tab-background-color-hover);
 +    background-color: #f0e4c7;
      outline-color: var(--tab-hover-outline-color);
    }
-
+ 
    &:is([selected], [multiselected]) {
 -    background-color: var(--tab-background-color-selected);
 +    background-color: #f7eaca;
      outline-color: var(--tab-selected-outline-color);
      box-shadow: var(--tab-box-shadow-selected);
    }
+@@ -3101,3 +3103,68 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+   white-space: nowrap;
+   width: 100%;
+ }
++
++/* Lithe's dedicated Vibes tab owns a persistent, intentionally obvious
++ * recommendation control strip. These selectors are inert in normal tabs. */
++notification-message.lithe-vibes-controls {
++  color: #f2e6c9;
++  font-family: "Courier New", monospace;
++  font-weight: 700;
++  letter-spacing: 0.04em;
++  border-block: 2px solid #80e1be;
++}
++
++notification-message.lithe-vibes-controls .notification-button-container {
++  gap: 8px;
++}
++
++notification-message.lithe-vibes-controls .notification-button {
++  min-width: 72px;
++  min-height: 30px;
++  padding-inline: 10px;
++  color: #181c23 !important;
++  background-color: #f2e6c9 !important;
++  border: 2px solid #181c23 !important;
++  border-radius: 2px !important;
++  box-shadow: 2px 2px 0 #80e1be;
++  font-family: "Courier New", monospace;
++  font-weight: 700;
++  letter-spacing: 0.06em;
++}
++
++notification-message.lithe-vibes-controls
++  .notification-button:is(:hover, [data-selected="true"]) {
++  color: #f2e6c9 !important;
++  background-color: #285347 !important;
++}
++
++notification-message.lithe-vibes-controls
++  .notification-button[data-lithe-vibes-action="back"]::before {
++  content: "◀ ";
++}
++
++notification-message.lithe-vibes-controls
++  .notification-button[data-lithe-vibes-action="next"]::after {
++  content: " ▶";
++}
++
++notification-message.lithe-vibes-controls
++  .notification-button:is(
++    [data-lithe-vibes-action="like"],
++    [data-lithe-vibes-action="dislike"]
++  ) {
++  padding-inline-start: 32px;
++  background-position: 9px center;
++  background-repeat: no-repeat;
++  background-size: 16px;
++}
++
++notification-message.lithe-vibes-controls
++  .notification-button[data-lithe-vibes-action="like"] {
++  background-image: url("chrome://branding/content/vibes-thumb-up.svg");
++}
++
++notification-message.lithe-vibes-controls
++  .notification-button[data-lithe-vibes-action="dislike"] {
++  background-image: url("chrome://branding/content/vibes-thumb-down.svg");
++}

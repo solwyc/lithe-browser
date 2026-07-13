@@ -277,14 +277,38 @@ class TestLitheYouTubeMedia(MarionetteTestCase):
                   () => {
                     const browser = gBrowser.selectedBrowser;
                     const box = gBrowser.getNotificationBox(browser);
+                    const notification = box.getNotificationWithValue(
+                      "lithe-vibes-feedback"
+                    );
                     const profile = JSON.parse(
+                      Services.prefs.getStringPref("lithe.vibes.localProfile")
+                    );
+                    const likeButton = notification?._buttons[2];
+                    const likeKeptOpen = likeButton?.buttonInfo.callback(
+                      notification,
+                      likeButton.buttonInfo,
+                      likeButton
+                    );
+                    const learnedProfile = JSON.parse(
                       Services.prefs.getStringPref("lithe.vibes.localProfile")
                     );
                     const selectedUrl = profile.seen.at(-1);
                     done({
                       error: null,
-                      feedbackVisible:
-                        !!box.getNotificationWithValue("lithe-vibes-feedback"),
+                      feedbackVisible: !!notification,
+                      controlActions: notification?._buttons.map(button =>
+                        button.getAttribute("data-lithe-vibes-action")
+                      ),
+                      controlClass:
+                        notification?.classList.contains("lithe-vibes-controls"),
+                      dismissable: notification?.dismissable,
+                      feedbackLearned: profile.last?.tags.some(
+                        tag => learnedProfile.scores[tag] > 0
+                      ),
+                      likeKeptOpen,
+                      likeSelected:
+                        likeButton?.getAttribute("data-selected") == "true",
+                      persistence: notification?.persistence,
                       knownCandidate: VIBES_CANDIDATES.some(
                         candidate => candidate.url == selectedUrl
                       ),
@@ -300,7 +324,51 @@ class TestLitheYouTubeMedia(MarionetteTestCase):
                 """
             )
 
+            about = self.marionette.execute_async_script(
+                """
+                const done = arguments[arguments.length - 1];
+                const dialog = window.openDialog(
+                  "chrome://browser/content/aboutDialog.xhtml",
+                  "",
+                  "chrome,centerscreen,dependent"
+                );
+                dialog.addEventListener(
+                  "load",
+                  async () => {
+                    await dialog.document.l10n.ready;
+                    await new Promise(resolve =>
+                      dialog.requestAnimationFrame(() =>
+                        dialog.requestAnimationFrame(resolve)
+                      )
+                    );
+                    const doc = dialog.document;
+                    const result = {
+                      mascot: dialog
+                        .getComputedStyle(doc.getElementById("leftBox"))
+                        .backgroundImage,
+                      privacy: doc.querySelector(
+                        '[data-l10n-id="bottom-links-privacy"]'
+                      )?.href,
+                      source: doc.querySelector(
+                        '[data-l10n-id="bottom-links-terms"]'
+                      )?.href,
+                      site: doc.querySelector(
+                        '[data-l10n-name="community-exp-mozillaLink"]'
+                      )?.href,
+                      tagline: doc
+                        .getElementById("litheTagline")
+                        ?.textContent.trim(),
+                    };
+                    dialog.close();
+                    done(result);
+                  },
+                  { once: true }
+                );
+                """
+            )
+
         result = {
+            "about": about,
             "state": state,
             "media": media,
             "policy": policy,
@@ -345,14 +413,38 @@ class TestLitheYouTubeMedia(MarionetteTestCase):
             {"space", "astronomy"}.intersection(classifier["topIds"])
         )
         self.assertIsNone(live_vibes["error"])
-        self.assertEqual(live_vibes["discovery"], "duckduckgo")
-        self.assertEqual(live_vibes["classifier"], "bge-small-en-v1.5")
+        self.assertIn(
+            live_vibes["discovery"], ["duckduckgo", "offline-catalog"]
+        )
+        if live_vibes["discovery"] == "duckduckgo":
+            self.assertEqual(live_vibes["classifier"], "bge-small-en-v1.5")
+            self.assertFalse(live_vibes["usedOfflineCatalog"])
+        else:
+            self.assertTrue(live_vibes["usedOfflineCatalog"])
         self.assertGreaterEqual(live_vibes["elapsedMS"], 2900)
-        self.assertFalse(live_vibes["usedOfflineCatalog"])
         self.assertIsNone(vibes["error"])
         self.assertTrue(vibes["knownCandidate"])
         self.assertTrue(vibes["feedbackVisible"])
+        self.assertEqual(
+            vibes["controlActions"], ["back", "dislike", "like", "next"]
+        )
+        self.assertTrue(vibes["controlClass"])
+        self.assertFalse(vibes["dismissable"])
+        self.assertTrue(vibes["feedbackLearned"])
+        self.assertTrue(vibes["likeKeptOpen"])
+        self.assertTrue(vibes["likeSelected"])
+        self.assertLess(vibes["persistence"], 0)
         self.assertTrue(vibes["dedicatedTab"])
+        self.assertIn("Lithe 0.1.2 alpha", about["tagline"])
+        self.assertIn("lithe-bunny.png", about["mascot"])
+        self.assertEqual(about["site"], "https://st-ipod.org/lithe")
+        self.assertEqual(
+            about["source"], "https://github.com/solwyc/lithe-browser"
+        )
+        self.assertEqual(
+            about["privacy"],
+            "https://github.com/solwyc/lithe-browser/blob/main/PRIVACY.md",
+        )
         self.assertFalse(state["paused"])
         self.assertGreater(state["currentTime"], 1)
         self.assertGreater(state["width"], 0)

@@ -13,10 +13,11 @@ pref("app.update.interval", 86400); // 24 hours
 pref("app.update.promptWaitTime", 86400);
 // URL user can browse to manually if for some reason all update installation
 // attempts fail.
-pref("app.update.url.manual", "");
+pref("app.update.url.manual", "https://github.com/solwyc/lithe-browser/releases/latest");
 // A default value for the "More information about this update" link
 // supplied in the "An update is available" page of the update wizard.
-pref("app.update.url.details", "");
+pref("app.update.url.details", "https://github.com/solwyc/lithe-browser/releases/latest");
+pref("app.releaseNotesURL.aboutDialog", "https://github.com/solwyc/lithe-browser/releases/latest");
 pref("app.update.auto", false);
 pref("app.update.service.enabled", false);
 
