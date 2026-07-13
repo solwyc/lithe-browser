@@ -55,7 +55,7 @@ Then build from a MozillaBuild shell:
 ```bash
 ./mach build
 ./mach xpcshell-test browser/components/tests/unit/test_litheResourcePolicy.js
-./mach marionette-test --allow-nonlocal-connections lithe_tests/test_lithe_youtube_media.py
+./mach marionette-test --app fxdesktop --allow-nonlocal-connections lithe_tests/test_lithe_youtube_media.py
 ```
 
 Artifact builds reuse Mozilla's precompiled native launcher. Apply Lithe's
