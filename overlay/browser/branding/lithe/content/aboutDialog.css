@@ -20,6 +20,19 @@
   padding-top: 72px;
 }
 
+#leftBox {
+  background-image: url("chrome://branding/content/lithe-bunny.png");
+  background-position: center 18px;
+  background-size: 176px auto;
+  min-height: 324px;
+}
+
+#litheTagline {
+  color: #80e1be;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
 #bottomBox {
   padding: 15px 10px;
 }

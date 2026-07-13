@@ -3,6 +3,8 @@
 Lithe is an experimental Gecko-based desktop browser focused on modern web
 compatibility without treating spare RAM and CPU as a consumption target.
 
+![Lithe's original bunny mascot](overlay/browser/branding/lithe/content/lithe-bunny.png)
+
 This repository is a compact, reproducible source overlay pinned to Firefox
 revision `d4ae522db3b933e502d1febec899e7955c1fb633`. It contains every Lithe
 modification and new source file without duplicating Mozilla's roughly
@@ -21,11 +23,17 @@ gigabyte-scale Git history.
 - 130-category, local website classification
 - Pinned q8 BGE Small ONNX model with no hosted inference
 - Three-second Vibes launch animation and offline discovery fallback
+- Persistent retro-pixel Back, dislike, like, and Next controls in Vibes tabs
+- A Lithe-specific About panel, release links, privacy information, and original
+  bunny mascot
 
 Vibes sends DuckDuckGo only generic category searches. It may pre-read up to
 three result pages without cookies, scripts, or referrers, then ranks them
 locally. Its interest profile is stored only in the browser profile and does
 not read ordinary browsing history.
+
+See [PRIVACY.md](PRIVACY.md) for the network and local-data boundaries, and
+[BRANDING.md](BRANDING.md) for use of the Lithe name, logo, and mascot.
 
 ## Build on Windows
 
@@ -83,5 +91,8 @@ MIT license and is documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md
 Lithe is not affiliated with or endorsed by Mozilla. Mozilla, Firefox, and
 their logos are Mozilla trademarks and are not licensed by this repository.
 References to Firefox identify the upstream source project only.
+
+The cream-and-mint hipster bunny is an original Lithe character and does not
+copy or represent Firefox, Mozilla, or another commercial character.
 
 The Windows binaries are experimental alpha builds provided without warranty.

@@ -11,7 +11,7 @@
 !define BrandFullNameInternal "Lithe Browser"
 !define BrandFullName         "Lithe Browser"
 !define CompanyName           "Lithe Project"
-!define URLInfoAbout          "https://www.mozilla.org/MPL/2.0/"
+!define URLInfoAbout          "https://st-ipod.org/lithe"
 !define HelpLink              "https://github.com/solwyc/lithe-browser/issues"
 
 !define URLStubDownloadX86 "https://github.com/solwyc/lithe-browser/releases/latest"

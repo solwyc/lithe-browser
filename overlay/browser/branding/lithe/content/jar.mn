@@ -11,6 +11,9 @@ browser.jar:
   content/branding/about-wordmark.svg
   content/branding/about-logo-private.png
   content/branding/about-logo-private@2x.png
+  content/branding/lithe-bunny.png
+  content/branding/vibes-thumb-down.svg
+  content/branding/vibes-thumb-up.svg
   content/branding/document.ico                  (../document.ico)
   content/branding/document_pdf.svg
   content/branding/firefox-wordmark.svg
