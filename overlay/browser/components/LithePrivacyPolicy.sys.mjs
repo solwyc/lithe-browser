@@ -7,6 +7,8 @@ import { SearchService } from "moz-src:///toolkit/components/search/SearchServic
 const ENABLED_PREF = "lithe.privacy.aiProtection.enabled";
 const RESTORE_PREF = "lithe.privacy.aiProtection.restoreState";
 const VIBES_RUNTIME_MIGRATION_PREF = "lithe.vibes.runtimeMigrationVersion";
+const SEARCH_MIGRATION_PREF = "lithe.search.defaultMigrationVersion";
+const SEARCH_MIGRATION_VERSION = 1;
 
 const PROTECTION_SETTINGS = [
   { pref: "privacy.trackingprotection.enabled", type: "bool", value: true },
@@ -162,7 +164,10 @@ export const LithePrivacyPolicy = {
   },
 
   async _setDuckDuckGoDefault() {
-    if (Services.prefs.getBoolPref("lithe.search.defaultInitialized", false)) {
+    if (
+      Services.prefs.getIntPref(SEARCH_MIGRATION_PREF, 0) >=
+      SEARCH_MIGRATION_VERSION
+    ) {
       return;
     }
 
@@ -180,7 +185,16 @@ export const LithePrivacyPolicy = {
         engine,
         SearchService.CHANGE_REASON.CONFIG
       );
+      const selectedEngine = await SearchService.getDefault();
+      if (selectedEngine?.id !== engine.id) {
+        throw new Error("DuckDuckGo did not remain the selected search engine");
+      }
+
       Services.prefs.setBoolPref("lithe.search.defaultInitialized", true);
+      Services.prefs.setIntPref(
+        SEARCH_MIGRATION_PREF,
+        SEARCH_MIGRATION_VERSION
+      );
     } catch (error) {
       console.error("Lithe could not set DuckDuckGo as default", error);
     }

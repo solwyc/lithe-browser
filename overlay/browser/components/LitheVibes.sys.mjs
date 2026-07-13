@@ -19,6 +19,8 @@ const lazy = XPCOMUtils.declareLazy({
 
 const WIDGET_ID = "lithe-vibes-button";
 const STATE_PREF = "lithe.vibes.localProfile";
+const TOOLBAR_MIGRATION_PREF = "lithe.vibes.toolbarMigrationVersion";
+const TOOLBAR_MIGRATION_VERSION = 2;
 const LAUNCH_PAGE = "chrome://browser/content/lithe-vibes/vibes.html";
 const DDG_SEARCH = "https://html.duckduckgo.com/html/";
 const MAX_SEEN = 240;
@@ -485,6 +487,39 @@ export const LitheVibes = {
       },
       onCommand: event => this.next(event.view),
     });
+
+    // createWidget's defaultArea only places a new widget when Gecko is
+    // building a fresh toolbar. Existing Lithe profiles already have a saved
+    // browser.uiCustomization.state, so migrate those profiles exactly once.
+    // After this migration the user can still move or remove Vibes normally.
+    if (
+      Services.prefs.getIntPref(TOOLBAR_MIGRATION_PREF, 0) <
+      TOOLBAR_MIGRATION_VERSION
+    ) {
+      const navbarWidgets = lazy.CustomizableUI.getWidgetIdsInArea(
+        lazy.CustomizableUI.AREA_NAVBAR
+      );
+      const urlbarPosition = navbarWidgets.indexOf("urlbar-container");
+      const targetPosition =
+        urlbarPosition < 0 ? navbarWidgets.length : urlbarPosition + 1;
+      const placement = lazy.CustomizableUI.getPlacementOfWidget(WIDGET_ID);
+      if (!placement) {
+        lazy.CustomizableUI.addWidgetToArea(
+          WIDGET_ID,
+          lazy.CustomizableUI.AREA_NAVBAR,
+          targetPosition
+        );
+      } else if (
+        placement.area === lazy.CustomizableUI.AREA_NAVBAR &&
+        placement.position !== targetPosition
+      ) {
+        lazy.CustomizableUI.moveWidgetWithinArea(WIDGET_ID, targetPosition);
+      }
+      Services.prefs.setIntPref(
+        TOOLBAR_MIGRATION_PREF,
+        TOOLBAR_MIGRATION_VERSION
+      );
+    }
   },
 
   _loadState() {

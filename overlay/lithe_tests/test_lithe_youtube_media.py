@@ -131,6 +131,24 @@ class TestLitheYouTubeMedia(MarionetteTestCase):
                     defaultSearchId: SearchService.defaultEngine?.id,
                     vibesWidgetRegistered:
                       !!CustomizableUI.getWidget("lithe-vibes-button"),
+                    vibesWidgetArea:
+                      CustomizableUI.getPlacementOfWidget(
+                        "lithe-vibes-button"
+                      )?.area,
+                    vibesWidgetPosition:
+                      CustomizableUI.getPlacementOfWidget(
+                        "lithe-vibes-button"
+                      )?.position,
+                    urlbarPosition:
+                      CustomizableUI.getPlacementOfWidget(
+                        "urlbar-container"
+                      )?.position,
+                    searchMigrationVersion: Services.prefs.getIntPref(
+                      "lithe.search.defaultMigrationVersion"
+                    ),
+                    vibesToolbarMigrationVersion: Services.prefs.getIntPref(
+                      "lithe.vibes.toolbarMigrationVersion"
+                    ),
                     vibesEnabled: Services.prefs.getBoolPref(
                       "lithe.vibes.enabled"
                     ),
@@ -300,6 +318,12 @@ class TestLitheYouTubeMedia(MarionetteTestCase):
         self.assertEqual(product["appName"], "Lithe")
         self.assertEqual(product["defaultSearch"], "DuckDuckGo")
         self.assertTrue(product["vibesWidgetRegistered"])
+        self.assertEqual(product["vibesWidgetArea"], "nav-bar")
+        self.assertEqual(
+            product["vibesWidgetPosition"], product["urlbarPosition"] + 1
+        )
+        self.assertEqual(product["searchMigrationVersion"], 1)
+        self.assertEqual(product["vibesToolbarMigrationVersion"], 2)
         self.assertFalse(product["vibesEnabled"])
         self.assertTrue(product["protectionEnabled"])
         self.assertTrue(product["trackerProtection"])
