@@ -1,4 +1,4 @@
-Lithe Browser 0.1.0-alpha for Windows x86-64
+Lithe Browser 0.1.1-alpha for Windows x86-64
 ================================================
 
 This is an experimental, unsigned portable alpha build.
@@ -22,4 +22,4 @@ generic category searches to DuckDuckGo and may pre-read up to three candidate
 pages without cookies, scripts, or referrers.
 
 Project and source: https://github.com/solwyc/lithe-browser
-Release source: https://github.com/solwyc/lithe-browser/tree/v0.1.0-alpha
+Release source: https://github.com/solwyc/lithe-browser/tree/v0.1.1-alpha

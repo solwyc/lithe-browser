@@ -7,7 +7,7 @@ License 2.0 and other open-source licenses.
 The complete Lithe modifications corresponding to this binary are available
 at no charge from:
 
-https://github.com/solwyc/lithe-browser/tree/v0.1.0-alpha
+https://github.com/solwyc/lithe-browser/tree/v0.1.1-alpha
 
 The exact upstream Mozilla Firefox / Gecko source revision used by this build
 is:
