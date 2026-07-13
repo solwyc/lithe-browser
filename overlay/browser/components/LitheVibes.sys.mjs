@@ -23,7 +23,7 @@ const TOOLBAR_MIGRATION_PREF = "lithe.vibes.toolbarMigrationVersion";
 const TOOLBAR_MIGRATION_VERSION = 2;
 const LAUNCH_PAGE = "chrome://browser/content/lithe-vibes/vibes.html";
 const DDG_SEARCH = "https://html.duckduckgo.com/html/";
-const MAX_SEEN = 240;
+const MAX_SEEN = 1000;
 const FETCH_LIMIT_BYTES = 72 * 1024;
 const BLOCKED_HOSTS = new Set([
   "duckduckgo.com",
@@ -141,13 +141,26 @@ function candidateTagScore(candidate, tag) {
   return Number.isFinite(classified) ? Math.max(0.1, classified) : 0.35;
 }
 
+function vibesSiteKey(value) {
+  try {
+    return new URL(value).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return String(value || "");
+  }
+}
+
+export function hasSeenVibesCandidate(inputState, candidate) {
+  const candidateKey = vibesSiteKey(candidate?.url);
+  return normalizeVibesState(inputState).seen.some(
+    url => vibesSiteKey(url) === candidateKey
+  );
+}
+
 export function selectVibesCandidate(candidates, inputState, random = Math.random) {
   const state = normalizeVibesState(inputState);
-  let available = candidates.filter(candidate => !state.seen.includes(candidate.url));
-  if (!available.length) {
-    state.seen = [];
-    available = [...candidates];
-  }
+  const available = candidates.filter(
+    candidate => !hasSeenVibesCandidate(state, candidate)
+  );
   if (!available.length) {
     return { candidate: null, state };
   }
@@ -223,16 +236,17 @@ export function buildVibesDiscoveryQuery(inputState, random = Math.random) {
   const categoryById = new Map(
     VIBES_CATEGORIES.map(category => [category.id, category])
   );
-  const interests = topInterestIds(state)
+  const interests = topInterestIds(state, 1)
     .map(id => categoryById.get(id))
     .filter(Boolean);
-  const explore =
-    VIBES_CATEGORIES[
-      Math.min(
-        VIBES_CATEGORIES.length - 1,
-        Math.floor(random() * VIBES_CATEGORIES.length)
-      )
-    ];
+  let exploreIndex = Math.min(
+    VIBES_CATEGORIES.length - 1,
+    Math.floor(random() * VIBES_CATEGORIES.length)
+  );
+  if (interests[0]?.id === VIBES_CATEGORIES[exploreIndex].id) {
+    exploreIndex = (exploreIndex + 1) % VIBES_CATEGORIES.length;
+  }
+  const explore = VIBES_CATEGORIES[exploreIndex];
   const terms = [...interests, explore]
     .filter((category, index, all) =>
       all.findIndex(item => item.id === category.id) === index
@@ -421,15 +435,24 @@ function shuffledTopResults(results, random) {
   return pool.slice(0, 3);
 }
 
+export function chooseUnseenVibesResults(
+  results,
+  inputState,
+  random = Math.random
+) {
+  const unseen = results.filter(
+    result => !hasSeenVibesCandidate(inputState, result)
+  );
+  return shuffledTopResults(unseen, random);
+}
+
 async function discoverVibesCandidates(state, random = Math.random) {
   const query = buildVibesDiscoveryQuery(state, random);
   const searchURL = `${DDG_SEARCH}?q=${encodeURIComponent(query)}&kl=wt-wt&kp=-2`;
   const html = await fetchLimitedText(searchURL, { timeoutMS: 8000 });
-  const unseen = parseDuckDuckGoResults(html).filter(
-    result => !state.seen.includes(result.url)
-  );
-  const searchResults = shuffledTopResults(
-    unseen.length >= 3 ? unseen : parseDuckDuckGoResults(html),
+  const searchResults = chooseUnseenVibesResults(
+    parseDuckDuckGoResults(html),
+    state,
     random
   );
   if (!searchResults.length) {

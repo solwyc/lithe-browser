@@ -1,0 +1,252 @@
+{
+  "generated_at_utc": "2026-07-13T21:23:16.771323+00:00",
+  "method": {
+    "runs": 5,
+    "workload_tabs": 6,
+    "profiles": "initialized isolated profile copied fresh for every measured run",
+    "order": "alternating Lithe/Chrome by iteration",
+    "server": "local HTTP on Windows loopback; Cache-Control: no-store"
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "logical_cpus": 28,
+    "physical_memory_gib": 31.785,
+    "lithe_version": "0.1.3-alpha / Gecko 154.0a1",
+    "chrome_version": "150.0.7871.102",
+    "lithe_executable": ".benchmark-runtime\\lithe\\lithe.exe",
+    "chrome_executable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  "summary_medians": {
+    "lithe": {
+      "startup_to_first_request_ms": 1695.337,
+      "six_tab_completion_ms": 2162.328,
+      "median_page_workload_ms": 190.0,
+      "median_page_js_ms": 45.0,
+      "peak_working_set_mib": 1353.27,
+      "settled_working_set_mib": 1353.27,
+      "peak_process_count": 12.0,
+      "settled_process_count": 12.0,
+      "cpu_seconds": 7.656
+    },
+    "chrome": {
+      "startup_to_first_request_ms": 460.967,
+      "six_tab_completion_ms": 1315.419,
+      "median_page_workload_ms": 184.15,
+      "median_page_js_ms": 64.1,
+      "peak_working_set_mib": 885.289,
+      "settled_working_set_mib": 885.289,
+      "peak_process_count": 14.0,
+      "settled_process_count": 14.0,
+      "cpu_seconds": 3.281
+    }
+  },
+  "performance_runs": [
+    {
+      "browser": "lithe",
+      "iteration": 1,
+      "startup_to_first_request_ms": 1943.572,
+      "six_tab_completion_ms": 2672.588,
+      "median_page_workload_ms": 199.5,
+      "median_page_js_ms": 47.0,
+      "peak_working_set_mib": 1353.27,
+      "settled_working_set_mib": 1353.27,
+      "peak_process_count": 12,
+      "settled_process_count": 12,
+      "cpu_seconds": 8.5,
+      "external_endpoints_observed": [
+        "151.101.137.91:443",
+        "34.107.243.93:443",
+        "34.160.144.191:443"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "iteration": 1,
+      "startup_to_first_request_ms": 529.984,
+      "six_tab_completion_ms": 1495.644,
+      "median_page_workload_ms": 312.95,
+      "median_page_js_ms": 84.5,
+      "peak_working_set_mib": 884.086,
+      "settled_working_set_mib": 884.086,
+      "peak_process_count": 14,
+      "settled_process_count": 14,
+      "cpu_seconds": 4.141,
+      "external_endpoints_observed": [
+        "142.250.139.132:443"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "iteration": 2,
+      "startup_to_first_request_ms": 460.967,
+      "six_tab_completion_ms": 1315.419,
+      "median_page_workload_ms": 160.25,
+      "median_page_js_ms": 64.1,
+      "peak_working_set_mib": 889.328,
+      "settled_working_set_mib": 889.328,
+      "peak_process_count": 14,
+      "settled_process_count": 14,
+      "cpu_seconds": 3.281,
+      "external_endpoints_observed": [
+        "142.250.139.132:443"
+      ]
+    },
+    {
+      "browser": "lithe",
+      "iteration": 2,
+      "startup_to_first_request_ms": 1814.711,
+      "six_tab_completion_ms": 2431.787,
+      "median_page_workload_ms": 190.0,
+      "median_page_js_ms": 45.0,
+      "peak_working_set_mib": 1343.766,
+      "settled_working_set_mib": 1343.766,
+      "peak_process_count": 12,
+      "settled_process_count": 12,
+      "cpu_seconds": 7.906,
+      "external_endpoints_observed": [
+        "151.101.137.91:443",
+        "34.107.243.93:443",
+        "34.160.144.191:443"
+      ]
+    },
+    {
+      "browser": "lithe",
+      "iteration": 3,
+      "startup_to_first_request_ms": 1502.445,
+      "six_tab_completion_ms": 2124.155,
+      "median_page_workload_ms": 190.0,
+      "median_page_js_ms": 45.5,
+      "peak_working_set_mib": 1335.555,
+      "settled_working_set_mib": 1335.555,
+      "peak_process_count": 12,
+      "settled_process_count": 12,
+      "cpu_seconds": 7.391,
+      "external_endpoints_observed": [
+        "151.101.137.91:443",
+        "34.160.144.191:443"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "iteration": 3,
+      "startup_to_first_request_ms": 1124.54,
+      "six_tab_completion_ms": 1913.847,
+      "median_page_workload_ms": 149.0,
+      "median_page_js_ms": 47.75,
+      "peak_working_set_mib": 894.371,
+      "settled_working_set_mib": 894.371,
+      "peak_process_count": 18,
+      "settled_process_count": 18,
+      "cpu_seconds": 3.578,
+      "external_endpoints_observed": [
+        "142.250.137.100:443",
+        "142.250.137.113:443",
+        "142.250.139.132:443",
+        "142.250.139.139:443",
+        "142.251.155.119:443",
+        "216.239.34.223:443",
+        "74.125.197.84:443"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "iteration": 4,
+      "startup_to_first_request_ms": 308.552,
+      "six_tab_completion_ms": 1206.607,
+      "median_page_workload_ms": 184.15,
+      "median_page_js_ms": 46.3,
+      "peak_working_set_mib": 879.871,
+      "settled_working_set_mib": 879.871,
+      "peak_process_count": 14,
+      "settled_process_count": 14,
+      "cpu_seconds": 2.375,
+      "external_endpoints_observed": [
+        "142.250.139.132:443"
+      ]
+    },
+    {
+      "browser": "lithe",
+      "iteration": 4,
+      "startup_to_first_request_ms": 1503.855,
+      "six_tab_completion_ms": 2162.328,
+      "median_page_workload_ms": 186.0,
+      "median_page_js_ms": 44.5,
+      "peak_working_set_mib": 1353.609,
+      "settled_working_set_mib": 1353.609,
+      "peak_process_count": 12,
+      "settled_process_count": 12,
+      "cpu_seconds": 7.391,
+      "external_endpoints_observed": [
+        "151.101.137.91:443",
+        "151.101.137.91:80",
+        "34.107.243.93:443",
+        "34.160.144.191:443"
+      ]
+    },
+    {
+      "browser": "lithe",
+      "iteration": 5,
+      "startup_to_first_request_ms": 1695.337,
+      "six_tab_completion_ms": 2096.05,
+      "median_page_workload_ms": 183.0,
+      "median_page_js_ms": 40.0,
+      "peak_working_set_mib": 1360.125,
+      "settled_working_set_mib": 1360.125,
+      "peak_process_count": 12,
+      "settled_process_count": 12,
+      "cpu_seconds": 7.656,
+      "external_endpoints_observed": [
+        "151.101.137.91:443",
+        "34.107.243.93:443",
+        "34.160.144.191:443"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "iteration": 5,
+      "startup_to_first_request_ms": 339.522,
+      "six_tab_completion_ms": 1255.92,
+      "median_page_workload_ms": 252.5,
+      "median_page_js_ms": 74.45,
+      "peak_working_set_mib": 885.289,
+      "settled_working_set_mib": 885.289,
+      "peak_process_count": 14,
+      "settled_process_count": 14,
+      "cpu_seconds": 3.156,
+      "external_endpoints_observed": [
+        "142.250.139.132:443"
+      ]
+    }
+  ],
+  "privacy_probe": [
+    {
+      "browser": "lithe",
+      "navigator_global_privacy_control": "true",
+      "navigator_do_not_track": "1",
+      "sec_gpc_header": "1",
+      "dnt_header": "1",
+      "prefetch_requested": false,
+      "external_endpoint_count": 3,
+      "external_endpoints_observed": [
+        "151.101.137.91:443",
+        "34.107.243.93:443",
+        "34.160.144.191:443"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "navigator_global_privacy_control": "undefined",
+      "navigator_do_not_track": "null",
+      "sec_gpc_header": null,
+      "dnt_header": null,
+      "prefetch_requested": true,
+      "external_endpoint_count": 3,
+      "external_endpoints_observed": [
+        "142.250.139.100:443",
+        "142.250.139.132:443",
+        "74.125.197.188:5228"
+      ]
+    }
+  ]
+}

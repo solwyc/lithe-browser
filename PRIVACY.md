@@ -24,7 +24,9 @@ Vibes is off until the user enables it. When enabled:
   without executing their scripts;
 - the bundled MIT-licensed BGE Small model classifies candidate text locally;
 - likes, dislikes, dwell signals, category scores, and seen URLs are stored only
-  in the current Lithe profile; and
+  in the current Lithe profile;
+- seen history retains up to 1,000 URLs, matches at the domain level, and is
+  never silently reset when a discovery search runs out of fresh sites; and
 - Vibes does not send the local taste profile or ordinary browsing history to a
   model provider, Google, or a Lithe server.
 
