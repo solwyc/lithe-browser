@@ -1,0 +1,193 @@
+diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
+index a0a469d01d..e8709be734 100644
+--- a/browser/components/BrowserGlue.sys.mjs
++++ b/browser/components/BrowserGlue.sys.mjs
+@@ -41,6 +41,11 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   Interactions: "moz-src:///browser/components/places/Interactions.sys.mjs",
+   LoginBreaches: "resource:///modules/LoginBreaches.sys.mjs",
+   LoginHelper: "resource://gre/modules/LoginHelper.sys.mjs",
++  LithePrivacyPolicy:
++    "moz-src:///browser/components/LithePrivacyPolicy.sys.mjs",
++  LitheResourcePolicy:
++    "moz-src:///browser/components/LitheResourcePolicy.sys.mjs",
++  LitheVibes: "moz-src:///browser/components/LitheVibes.sys.mjs",
+   MigrationUtils: "resource:///modules/MigrationUtils.sys.mjs",
+   NimbusFeatures: "resource://nimbus/ExperimentAPI.sys.mjs",
+   OnboardingMessageProvider:
+@@ -385,6 +390,8 @@ BrowserGlue.prototype = {
+   // runs on startup, before the first command line handler is invoked
+   // (i.e. before the first window is opened)
+   _beforeUIStartup: function BG__beforeUIStartup() {
++    lazy.LithePrivacyPolicy.init();
++    lazy.LitheResourcePolicy.init();
+     lazy.SessionStartup.init();
+ 
+     // check if we're in safe mode
+@@ -926,6 +933,8 @@ BrowserGlue.prototype = {
+     }
+     this._windowsWereRestored = true;
+ 
++    lazy.LitheVibes.init();
++
+     lazy.BrowserUsageTelemetry.init();
+     lazy.SearchSERPTelemetry.init();
+ 
+diff --git a/browser/components/moz.build b/browser/components/moz.build
+index d1d769ab09..51c831377d 100644
+--- a/browser/components/moz.build
++++ b/browser/components/moz.build
+@@ -78,6 +78,7 @@ DIRS += [
+     "translations",
+     "uitour",
+     "urlbar",
++    "vibes",
+     "webrtc",
+ ]
+ 
+@@ -118,6 +119,10 @@ EXTRA_JS_MODULES += [
+ MOZ_SRC_FILES += [
+     "DefaultBrowserCheck.sys.mjs",
+     "DesktopActorRegistry.sys.mjs",
++    "LithePrivacyPolicy.sys.mjs",
++    "LitheResourcePolicy.sys.mjs",
++    "LitheVibes.sys.mjs",
++    "LitheVibesClassifier.sys.mjs",
+     "ProfileDataUpgrader.sys.mjs",
+     "StartupTelemetry.sys.mjs",
+ ]
+diff --git a/browser/components/preferences/config/privacy.mjs b/browser/components/preferences/config/privacy.mjs
+index 57bf119a2c..ef9f985d06 100644
+--- a/browser/components/preferences/config/privacy.mjs
++++ b/browser/components/preferences/config/privacy.mjs
+@@ -311,6 +311,10 @@ const SECURITY_PRIVACY_STATUS_CARD_ENABLED =
+   );
+ 
+ Preferences.addAll([
++  // Lithe local privacy controls
++  { id: "lithe.privacy.aiProtection.enabled", type: "bool" },
++  { id: "lithe.vibes.enabled", type: "bool" },
++
+   // Content blocking / Tracking Protection
+   { id: "privacy.trackingprotection.enabled", type: "bool" },
+   { id: "privacy.trackingprotection.pbmode.enabled", type: "bool" },
+diff --git a/browser/components/preferences/privacy.inc.xhtml b/browser/components/preferences/privacy.inc.xhtml
+index 78e2e934cf..33a7197658 100644
+--- a/browser/components/preferences/privacy.inc.xhtml
++++ b/browser/components/preferences/privacy.inc.xhtml
+@@ -550,6 +550,20 @@
+   class="subcategory" data-srd-migrated=""></html:setting-group>
+ <html:setting-group groupid="privacyPanel" id="privacyPanelGroup" data-category="panePrivacy" hidden="true" data-srd-migrated=""></html:setting-group>
+ 
++<groupbox id="lithePrivacyGroup" data-category="panePrivacy" hidden="true">
++  <label><html:h2 data-l10n-id="lithe-privacy-header"/></label>
++  <checkbox id="litheAiProtection"
++            preference="lithe.privacy.aiProtection.enabled"
++            data-l10n-id="lithe-ai-protection-toggle"/>
++  <description class="indent description-deemphasized"
++               data-l10n-id="lithe-ai-protection-description"/>
++  <checkbox id="litheVibesEnabled"
++            preference="lithe.vibes.enabled"
++            data-l10n-id="lithe-vibes-toggle"/>
++  <description class="indent description-deemphasized"
++               data-l10n-id="lithe-vibes-description"/>
++</groupbox>
++
+ <groupbox data-category="panePrivacy" hidden="true" data-srd-groupid="dataCollection">
+   <vbox id="privacySegmentationSection" data-subcategory="privacy-segmentation" hidden="true">
+     <label>
+diff --git a/browser/components/tests/unit/xpcshell.toml b/browser/components/tests/unit/xpcshell.toml
+index c85baeaceb..fdc06b8d4c 100644
+--- a/browser/components/tests/unit/xpcshell.toml
++++ b/browser/components/tests/unit/xpcshell.toml
+@@ -35,6 +35,8 @@ skip-if = [
+ 
+ ["test_distribution_mozillaonline.js"]
+ 
++["test_litheResourcePolicy.js"]
++
+ ["test_distribution_observer.js"]
+ 
+ ["test_profileDataUpgrade_duplicateCookiePerms.js"]
+diff --git a/browser/extensions/newtab/content-src/components/Logo/_Logo.scss b/browser/extensions/newtab/content-src/components/Logo/_Logo.scss
+index 9903881718..57961bc3a1 100644
+--- a/browser/extensions/newtab/content-src/components/Logo/_Logo.scss
++++ b/browser/extensions/newtab/content-src/components/Logo/_Logo.scss
+@@ -3,7 +3,7 @@
+ 
+ .logo-and-wordmark-wrapper {
+   // Override default h1 margins
+-  margin-block: 0;
++  margin-block: var(--space-medium) 0;
+ 
+   .nova-enabled .content & {
+     grid-column: 1 / -1;
+diff --git a/browser/locales/en-US/browser/preferences/preferences.ftl b/browser/locales/en-US/browser/preferences/preferences.ftl
+index ea56406bcc..46ce55d3de 100644
+--- a/browser/locales/en-US/browser/preferences/preferences.ftl
++++ b/browser/locales/en-US/browser/preferences/preferences.ftl
+@@ -2716,3 +2716,19 @@ security-privacy-issue-warning-ech =
+ security-privacy-issue-warning-proxy-autodetection =
+   .label = Proxy auto-configuration is enabled
+   .description = Proxy auto-configuration could let untrusted networks to monitor your activity.
++
++## Lithe controls
++
++lithe-privacy-header = Lithe privacy
++
++lithe-ai-protection-toggle =
++  .label = AI & tracker protection
++  .accesskey = A
++
++lithe-ai-protection-description = Blocks known trackers, fingerprinters, cryptominers, and Firefox AI surfaces; strips common tracking parameters and sends Global Privacy Control. It cannot control how a site uses information you deliberately submit.
++
++lithe-vibes-toggle =
++  .label = Vibes local discovery
++  .accesskey = V
++
++lithe-vibes-description = Opens a dedicated discovery tab. Vibes sends DuckDuckGo only generic category searches, pre-reads at most three candidates without cookies, and classifies them with a bundled MIT-licensed model. Its interest profile stays in this profile and never reads general browsing history.
+diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
+index 3c925f4d28..dd8c3e31e5 100644
+--- a/browser/themes/shared/tabbrowser/tabs.css
++++ b/browser/themes/shared/tabbrowser/tabs.css
+@@ -281,6 +281,7 @@ tab-split-view-wrapper[dragtarget] {
+ }
+ 
+ .tab-content {
++  color: #20252c;
+   position: relative;
+   padding: 0 var(--tab-inline-padding);
+ 
+@@ -293,7 +294,7 @@ tab-split-view-wrapper[dragtarget] {
+   }
+ 
+   &:is([selected], [multiselected]) {
+-    color: var(--tab-selected-textcolor);
++    color: #181c23;
+     color-scheme: var(--tab-selected-color-scheme);
+   }
+ }
+@@ -904,7 +905,8 @@ tab-split-view-wrapper[dragtarget] {
+ }
+ 
+ .tab-background {
+-  border-radius: var(--tab-border-radius);
++  background-color: #e8ddc2;
++  border-radius: 9px;
+   margin-block: var(--tab-margin-block);
+   min-height: var(--tab-min-height);
+   outline: var(--tab-outline);
+@@ -915,12 +917,12 @@ tab-split-view-wrapper[dragtarget] {
+   }
+ 
+   .tabbrowser-tab:hover > .tab-stack > &:not([selected], [multiselected]) {
+-    background-color: var(--tab-background-color-hover);
++    background-color: #f0e4c7;
+     outline-color: var(--tab-hover-outline-color);
+   }
+ 
+   &:is([selected], [multiselected]) {
+-    background-color: var(--tab-background-color-selected);
++    background-color: #f7eaca;
+     outline-color: var(--tab-selected-outline-color);
+     box-shadow: var(--tab-box-shadow-selected);
+   }

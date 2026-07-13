@@ -1,0 +1,12 @@
+# Reproduced third-party model files
+overlay/browser/components/vibes/models/
+
+# Local build and release output
+artifacts/
+*.zip
+*.sha256
+
+# Local tooling
+.DS_Store
+Thumbs.db
+
