@@ -145,6 +145,21 @@ index ea56406bcc..46ce55d3de 100644
 +  .accesskey = V
 +
 +lithe-vibes-description = Opens a dedicated discovery tab. Vibes sends DuckDuckGo only generic category searches, pre-reads at most three candidates without cookies, and classifies them with a bundled MIT-licensed model. Its interest profile stays in this profile and never reads general browsing history.
+diff --git a/browser/moz.configure b/browser/moz.configure
+index 3ea3d88b93..2b65485148 100644
+--- a/browser/moz.configure
++++ b/browser/moz.configure
+@@ -11,8 +11,8 @@ imply_option("MOZ_NORMANDY", True)
+ imply_option("MOZ_PROFILE_MIGRATOR", True)
+
+
+-imply_option("MOZ_APP_VENDOR", "Mozilla")
+-imply_option("MOZ_APP_ID", "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}")
++imply_option("MOZ_APP_VENDOR", "Lithe Project")
++imply_option("MOZ_APP_ID", "{319bf2b2-64d9-4af8-8c61-02f8261ff97e}")
+ # Include the DevTools client, not just the server (which is the default)
+ imply_option("MOZ_DEVTOOLS", "all")
+ imply_option("BROWSER_CHROME_URL", "chrome://browser/content/browser.xhtml")
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
 index 3c925f4d28..dd8c3e31e5 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
