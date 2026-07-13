@@ -1,0 +1,23 @@
+SOURCE CODE NOTICE
+==================
+
+This Lithe Browser executable contains software governed by the Mozilla Public
+License 2.0 and other open-source licenses.
+
+The complete Lithe modifications corresponding to this binary are available
+at no charge from:
+
+https://github.com/solwyc/lithe-browser/tree/v0.1.0-alpha
+
+The exact upstream Mozilla Firefox / Gecko source revision used by this build
+is:
+
+d4ae522db3b933e502d1febec899e7955c1fb633
+
+Upstream source is available from:
+
+https://github.com/mozilla-firefox/firefox/tree/d4ae522db3b933e502d1febec899e7955c1fb633
+
+See LICENSE and THIRD_PARTY_NOTICES.md in the Lithe source repository for
+license and model details. Lithe is not affiliated with or endorsed by Mozilla.
+Mozilla, Firefox, and their logos are Mozilla trademarks.
