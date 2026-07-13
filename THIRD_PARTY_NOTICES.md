@@ -31,4 +31,3 @@ Hugging Face hosted inference at runtime.
 
 `overlay/lithe_tools/lithe_resource_brand.cpp` is distributed under the MIT
 license. Its license text is included beside the helper.
-
